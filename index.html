@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>เงินของผม</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="เงินผม">
+<meta name="theme-color" content="#ff4a1c">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&family=Kanit:wght@500;600&family=Sofia+Sans+Condensed:wght@700;800&display=swap" rel="stylesheet">
+<style>
+/* VOICE: plain, fast, like a pocket money book — few words, big numbers
+   IDEA: an annual-report cover for one person's month: one huge figure, then the ledger
+   PICTURE: the working tool itself — a vermilion block with "money left" huge, Grab break-even meter
+   COLOUR and TYPE: white/black + vermilion #ff4a1c; night on #120d0b. Kanit titles, Plex Sans Thai body, Sofia Sans Condensed numbers
+   LAYOUT: one column for a phone, two columns above 900px; tabs under the hero */
+:root{color-scheme:light dark;--bg:light-dark(#fff,#120d0b);--ink:light-dark(#111,#f4ede9);--mut:light-dark(#6b6461,#a99e99);--line:light-dark(#e8e2df,#2c2320);--card:light-dark(#f7f4f2,#1c1512);--acc:#ff4a1c;--acc2:light-dark(#c9300c,#ff7a55);--good:light-dark(#0f7a43,#4fd18b);--bad:light-dark(#c9300c,#ff7a55)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "IBM Plex Sans Thai",system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3{font-family:Kanit,"IBM Plex Sans Thai",sans-serif;font-weight:600;line-height:1.15;margin:0}
+.num{font-family:"Sofia Sans Condensed",Kanit,sans-serif;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
+.wrap{max-width:1100px;margin:0 auto;padding:0 max(4vw,16px)}
+.hero{background:var(--acc);color:#fff;padding:calc(20px + env(safe-area-inset-top)) 0 26px}
+.wrap{padding-left:max(4vw,16px,env(safe-area-inset-left));padding-right:max(4vw,16px,env(safe-area-inset-right))}
+.hero .top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.hero h1{font-size:22px}
+.hero input[type=month]{font:inherit;font-size:16px;background:rgba(0,0,0,.18);color:#fff;border:0;border-radius:10px;padding:8px 10px;min-height:44px;color-scheme:dark}
+.big{font-size:clamp(56px,16vw,104px);line-height:.95;margin:14px 0 4px}
+.sub{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:15px;opacity:.95}
+.sub b{font-family:"Sofia Sans Condensed",sans-serif;font-size:20px;font-weight:800}
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+.btn{font:inherit;font-weight:600;font-size:16px;min-height:48px;border-radius:12px;border:0;padding:10px 14px;cursor:pointer;background:var(--card);color:var(--ink)}
+.btn:focus-visible,input:focus-visible,select:focus-visible,.tab:focus-visible{outline:3px solid var(--acc2);outline-offset:2px}
+.hero .btn{background:#fff;color:#111}.hero .btn.dk{background:#111;color:#fff}
+.btn.pri{background:var(--acc);color:#fff}.btn.ghost{background:transparent;border:1.5px solid var(--line)}
+.btn.sm{min-height:44px;font-size:15px;padding:8px 12px}
+.tabs{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.tabs .wrap{display:flex;gap:4px;overflow-x:auto}
+.tab{font:inherit;font-weight:600;background:none;border:0;color:var(--mut);padding:12px 14px;min-height:48px;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap}
+.tab[aria-selected=true]{color:var(--ink);border-color:var(--acc)}
+main{padding:20px 0 90px}
+section[hidden]{display:none}
+.grid{display:grid;gap:18px}
+@media(min-width:900px){.grid.two{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+.card{background:var(--card);border-radius:16px;padding:18px}
+.card h2{font-size:19px;margin-bottom:10px}
+.muted{color:var(--mut);font-size:14px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:0}
+.row .l{flex:1}.row .t{font-weight:500}.row .m{font-size:13px;color:var(--mut)}
+.amt{font-family:"Sofia Sans Condensed",sans-serif;font-weight:800;font-size:20px;white-space:nowrap}
+.in{color:var(--good)}.out{color:var(--ink)}
+.tap{cursor:pointer;border-radius:10px}.tap:hover{background:rgba(127,127,127,.08)}
+.bar{height:10px;background:var(--line);border-radius:6px;overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;background:var(--acc)}
+.meter{position:relative;height:26px;background:var(--line);border-radius:8px;overflow:hidden;margin:16px 0 8px}
+.meter i{position:absolute;inset:0 auto 0 0;background:var(--acc)}
+.meter s{position:absolute;top:0;bottom:0;width:2px;background:var(--ink)}
+.legend{display:flex;justify-content:space-between;font-size:13px;color:var(--mut);gap:8px}
+.kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px}
+.kpi{background:var(--bg);border-radius:12px;padding:10px}.kpi b{display:block;font-family:"Sofia Sans Condensed",sans-serif;font-size:22px;font-weight:800}
+.kpi span{font-size:12px;color:var(--mut)}
+.verdict{font-size:clamp(34px,9vw,52px);line-height:1}
+.chip{display:inline-block;font-size:12px;padding:2px 8px;border-radius:20px;background:var(--line);color:var(--mut);margin-left:6px;vertical-align:2px}
+.chip.ok{background:var(--good);color:#fff}
+.empty{text-align:center;color:var(--mut);padding:26px 10px}
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.filters button{font:inherit;font-size:14px;min-height:40px;padding:6px 12px;border-radius:20px;border:1.5px solid var(--line);background:none;color:var(--ink);cursor:pointer}
+.filters button[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+dialog{border:0;border-radius:18px;padding:0;width:min(520px,94vw);background:var(--bg);color:var(--ink)}
+dialog::backdrop{background:rgba(0,0,0,.5)}
+dialog form{padding:20px;display:grid;gap:12px}
+label{display:grid;gap:4px;font-size:14px;color:var(--mut)}
+input,select{font:inherit;font-size:16px;min-height:46px;padding:8px 12px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);width:100%}
+.two-in{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.seg button{font:inherit;font-weight:600;min-height:46px;border-radius:10px;border:1.5px solid var(--line);background:none;color:var(--ink);cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.dlgacts{display:flex;gap:8px;justify-content:space-between;flex-wrap:wrap;margin-top:4px}
+#toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#111;color:#fff;padding:12px 18px;border-radius:12px;font-size:15px;max-width:92vw;opacity:0;pointer-events:none;transition:opacity .2s;z-index:50}
+#toast.on{opacity:1}
+#note{background:#111;color:#fff;font-size:14px;padding:10px 16px;text-align:center}
+#note:empty{display:none}
+@media(prefers-reduced-motion:reduce){#toast{transition:none}}
+</style>
+</head>
+<body>
+<header class="hero">
+ <div class="wrap">
+  <div class="top"><h1>เงินของผม</h1><input type="month" id="month" aria-label="เลือกเดือน"></div>
+  <div class="muted" style="color:#fff;opacity:.85;margin-top:10px">เหลือใช้เดือนนี้ (หลังกันค่าคงที่ที่ยังไม่จ่าย)</div>
+  <div class="big num" id="left">฿0</div>
+  <div class="sub"><span>รับ <b id="hIn">฿0</b></span><span>จ่าย <b id="hOut">฿0</b></span><span>ค่าคงที่ค้างจ่าย <b id="hFix">฿0</b></span></div>
+  <div class="acts">
+   <button class="btn dk" id="addBtn">＋ รายรับ / รายจ่าย</button>
+   <button class="btn" id="heroGrab">＋ รอบ Grab</button>
+  </div>
+  <input type="file" id="importFile" accept="application/json,.json" hidden>
+ </div>
+</header>
+<nav class="tabs"><div class="wrap" role="tablist">
+ <button class="tab" role="tab" data-t="ov" aria-selected="true">ภาพรวม</button>
+ <button class="tab" role="tab" data-t="tx" aria-selected="false">รายการ</button>
+ <button class="tab" role="tab" data-t="grab" aria-selected="false">Grab คุ้มไหม</button>
+ <button class="tab" role="tab" data-t="fix" aria-selected="false">ค่าคงที่</button>
+</div></nav>
+<main class="wrap">
+ <section id="ov" class="grid two">
+  <div class="card"><h2>Grab วันนี้</h2><div id="ovGrab"></div></div>
+  <div class="card"><h2>จ่ายไปกับอะไร</h2><div id="ovCats"></div></div>
+  <div class="card"><h2>ค่าคงที่ต่อเดือน</h2><div id="ovFix"></div></div>
+  <div class="card"><h2>ล่าสุด</h2><div id="ovRecent"></div></div>
+ </section>
+ <section id="tx" hidden>
+  <div class="filters" id="txFilter"></div>
+  <div class="card"><div id="txList"></div></div>
+ </section>
+ <section id="grab" hidden class="grid two">
+  <div class="card">
+   <h2>วันนี้คุ้มค่ารถไหม</h2>
+   <div id="gToday"></div>
+   <div class="acts" style="margin-top:14px">
+    <button class="btn pri" id="gAdd" style="grid-column:1/-1">＋ เพิ่มรอบ</button>
+   </div>
+  </div>
+  <div class="card"><h2>ทั้งเดือน</h2><div id="gMonth"></div></div>
+  <div class="card"><h2>รอบของวันนี้</h2><div id="gTrips"></div></div>
+  <div class="card"><h2>ต้นทุน Volvo EX30</h2><div id="gCar"></div><button class="btn ghost sm" id="carEdit" style="margin-top:10px">แก้ตัวเลขต้นทุนรถ</button></div>
+ </section>
+ <section id="fix" hidden>
+  <div class="card"><h2>ค่าใช้จ่ายคงที่ทุกเดือน</h2><div id="fixList"></div>
+   <button class="btn pri sm" id="fixAdd" style="margin-top:12px">＋ เพิ่มค่าคงที่</button></div>
+  <div class="card" style="margin-top:18px"><h2>สำรองข้อมูล</h2>
+   <p class="muted" style="margin:0 0 12px">ข้อมูลทั้งหมดเก็บอยู่ในมือถือเครื่องนี้เท่านั้น ถ้าลบแอปหรือเปลี่ยนเครื่องข้อมูลจะหาย ควรกดสำรองเก็บไว้ทุกเดือน (เซฟลงแอป Files หรือ iCloud Drive)</p>
+   <div class="acts" style="margin-top:0"><button class="btn ghost" id="expBtn">⬇ สำรองข้อมูล</button><button class="btn ghost" id="impBtn">⬆ นำข้อมูลกลับมา</button></div>
+   <p class="muted" id="lastBk" style="margin:10px 0 0"></p>
+  </div>
+ </section>
+</main>
+
+<dialog id="dlg"><form id="dform" method="dialog"></form></dialog>
+<div id="toast" role="status"></div>
+
+<script>
+{
+const CATS_OUT=["อาหาร","ชาร์จรถ/เดินทาง","ช้อปปิ้ง","บิล/ค่าบริการ","ค่าคงที่","ธุรกิจ","อื่นๆ"];
+const CATS_IN=["คอมมิชชั่นประกัน","Grab","ขายของ/พรีออเดอร์","คนโอนให้","อื่นๆ"];
+const CAR_DEF={inst:18000,ins:0,other:0,days:26,kwh:17,price:6,cut:0,target:2000};
+let tx=[],grab=[],fixed=[],car={...CAR_DEF};
+const KEY="moneyapp.v1";
+let S=(()=>{try{return JSON.parse(localStorage.getItem(KEY))}catch{return null}})();
+if(!S||typeof S!=="object")S={tx:{},grab:{},fixed:{prae:{name:"ค่าแพร",amount:3000,day:"",paid:{}},computer:{name:"ค่าคอม",amount:3700,day:"",paid:{}},watch:{name:"ค่านาฬิกา",amount:750,day:"",paid:{}},ex30:{name:"ค่างวด Volvo EX30",amount:18000,day:"",paid:{}},carins:{name:"ประกันรถ (เฉลี่ย/เดือน)",amount:3000,day:"",paid:{}}},car:{inst:18000,ins:36000,other:0,days:26,kwh:17,price:6,cut:0,target:2000},lastBackup:""};
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const db={doc(p){const [c,id]=p.split("/");return{set:async b=>{if(c==="settings")S.car=b;else S[c][id]=b;persist()},delete:async()=>{delete S[c][id];persist()}}},collection(c){return{add:async b=>{S[c][uid()]=b;persist()}}}};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fm=n=>"฿"+Math.round(Number(n)||0).toLocaleString("en-US");
+const pad=n=>String(n).padStart(2,"0");
+const today=()=>{const d=new Date();return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())};
+const nowT=()=>{const d=new Date();return pad(d.getHours())+":"+pad(d.getMinutes())};
+const num=v=>{const n=parseFloat(String(v??"").replace(/,/g,""));return isFinite(n)?n:0};
+let toastT;function toast(m,ms=2600){const t=$("toast");t.textContent=m;t.classList.add("on");clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("on"),ms)}
+$("month").value=today().slice(0,7);
+const M=()=>$("month").value||today().slice(0,7);
+
+/* ---------- maths ---------- */
+const C=()=>({...CAR_DEF,...car});
+const perKm=()=>C().kwh/100*C().price;
+const carMonth=()=>C().inst+C().ins/12+C().other;
+const carDay=()=>carMonth()/Math.max(1,C().days);
+const tripGross=t=>num(t.fare)*(1-C().cut/100);
+const tripNet=t=>tripGross(t)-num(t.km)*perKm();
+const paidThisMonth=(f,m)=>(f.paid&&f.paid[m])||tx.some(t=>t.fixed===f.id&&String(t.date).startsWith(m));
+function monthSums(m){
+ const T=tx.filter(t=>String(t.date).startsWith(m)),G=grab.filter(g=>String(g.date).startsWith(m));
+ const inc=T.filter(t=>t.kind==="in").reduce((a,t)=>a+num(t.amount),0)+G.reduce((a,g)=>a+tripGross(g),0);
+ const out=T.filter(t=>t.kind!=="in").reduce((a,t)=>a+num(t.amount),0);
+ const unpaid=fixed.filter(f=>!paidThisMonth(f,m)).reduce((a,f)=>a+num(f.amount),0);
+ return {T,G,inc,out,unpaid,left:inc-out-unpaid};
+}
+
+/* ---------- render ---------- */
+function txRow(t){
+ const isIn=t.kind==="in";
+ return `<div class="row tap" data-tx="${esc(t.id)}"><div class="l"><div class="t">${esc(t.who||t.cat||"รายการ")}${t.src==="slip"?'<span class="chip">สลิป</span>':""}</div><div class="m">${esc(t.date)} ${esc(t.time||"")} · ${esc(t.cat||"")}</div></div><div class="amt ${isIn?"in":"out"}">${isIn?"+":"−"}${esc(fm(t.amount))}</div></div>`;
+}
+function grabToday(el){
+ const d=today(),G=grab.filter(g=>g.date===d);
+ const gross=G.reduce((a,g)=>a+tripGross(g),0),km=G.reduce((a,g)=>a+num(g.km),0),energy=km*perKm();
+ const net=gross-energy-carDay(),be=carDay()+energy,goal=be+C().target;
+ const pct=Math.min(100,goal?gross/goal*100:0),bePct=goal?be/goal*100:0;
+ const msg=gross>=be?`คุ้มค่ารถแล้ว เกินมา ${fm(gross-be)}`:`อีก ${fm(be-gross)} ถึงจะคุ้มค่ารถวันนี้`;
+ el.innerHTML=`<div class="muted">กำไรวันนี้ หลังหักค่าไฟ + ค่ารถรายวัน</div>
+ <div class="verdict num ${net>=0?"in":"out"}">${net>=0?"":"−"}${esc(fm(Math.abs(net)))}</div>
+ <div style="font-weight:600;margin-top:6px">${esc(msg)}</div>
+ <div class="meter" role="img" aria-label="ความคืบหน้ารายได้วันนี้"><i style="width:${pct}%"></i><s style="left:${bePct}%"></s></div>
+ <div class="legend"><span>รายได้ ${esc(fm(gross))}</span><span>จุดคุ้ม ${esc(fm(be))}</span><span>เป้า ${esc(fm(goal))}</span></div>
+ <div class="kpis"><div class="kpi"><b>${G.length}</b><span>รอบ</span></div><div class="kpi"><b>${esc(fm(G.length?gross/G.length:0))}</b><span>เฉลี่ย/รอบ</span></div><div class="kpi"><b>${esc(km.toFixed(0))}</b><span>กม.</span></div></div>`;
+}
+function render(){
+ const m=M(),s=monthSums(m);
+ $("left").textContent=(s.left<0?"−":"")+fm(Math.abs(s.left));
+ $("hIn").textContent=fm(s.inc);$("hOut").textContent=fm(s.out);$("hFix").textContent=fm(s.unpaid);
+ /* overview */
+ grabToday($("ovGrab"));
+ const cats={};s.T.filter(t=>t.kind!=="in").forEach(t=>{const c=t.cat||"อื่นๆ";cats[c]=(cats[c]||0)+num(t.amount)});
+ const ce=Object.entries(cats).sort((a,b)=>b[1]-a[1]),mx=ce.length?ce[0][1]:1;
+ $("ovCats").innerHTML=ce.length?ce.map(([c,v])=>`<div style="margin:10px 0"><div class="legend" style="color:var(--ink)"><span>${esc(c)}</span><span class="num" style="font-size:17px">${esc(fm(v))}</span></div><div class="bar"><i style="width:${v/mx*100}%"></i></div></div>`).join(""):`<div class="empty">ยังไม่มีรายจ่ายเดือนนี้<br>กด “＋ รายรับ / รายจ่าย” เพื่อเริ่ม</div>`;
+ const ft=fixed.reduce((a,f)=>a+num(f.amount),0);
+ $("ovFix").innerHTML=`<div class="verdict num">${esc(fm(ft))}</div><div class="muted">ต่อเดือน · เฉลี่ยวันละ ${esc(fm(ft/30))}</div>`+fixed.map(f=>`<div class="row"><div class="l">${esc(f.name)}${paidThisMonth(f,m)?'<span class="chip ok">จ่ายแล้ว</span>':""}</div><div class="amt">${esc(fm(f.amount))}</div></div>`).join("");
+ const rec=[...tx].sort((a,b)=>(b.date+b.time).localeCompare(a.date+a.time)).slice(0,5);
+ $("ovRecent").innerHTML=rec.length?rec.map(txRow).join(""):`<div class="empty">ยังไม่มีรายการ</div>`;
+ /* tx list */
+ const f=$("txFilter").dataset.f||"all";
+ $("txFilter").innerHTML=[["all","ทั้งหมด"],["out","รายจ่าย"],["in","รายรับ"],["slip","จากสลิป"]].map(([k,l])=>`<button data-f="${k}" aria-pressed="${f===k}">${l}</button>`).join("");
+ const L=s.T.filter(t=>f==="all"||(f==="slip"?t.src==="slip":(f==="in"?t.kind==="in":t.kind!=="in"))).sort((a,b)=>(b.date+b.time).localeCompare(a.date+a.time));
+ $("txList").innerHTML=L.length?L.map(txRow).join(""):`<div class="empty">ไม่มีรายการในเดือนนี้</div>`;
+ /* grab */
+ grabToday($("gToday"));
+ const mg=s.G.reduce((a,g)=>a+tripNet(g),0),cm=carMonth(),cov=cm?mg/cm*100:0;
+ $("gMonth").innerHTML=`<div class="muted">รายได้ Grab หลังหักค่าไฟ เทียบกับค่ารถทั้งเดือน</div><div class="verdict num ${mg>=cm?"in":"out"}">${esc(cov.toFixed(0))}%</div><div style="font-weight:600">${mg>=cm?"เดือนนี้ Grab จ่ายค่ารถได้ครบแล้ว":"ยังขาดอีก "+esc(fm(cm-mg))+" ถึงจะครบค่ารถเดือนนี้"}</div><div class="bar" style="height:14px;margin-top:12px"><i style="width:${Math.min(100,cov)}%"></i></div><div class="legend" style="margin-top:6px"><span>ได้ ${esc(fm(mg))} จาก ${s.G.length} รอบ</span><span>ค่ารถ ${esc(fm(cm))}</span></div>`;
+ const TG=grab.filter(g=>g.date===today()).sort((a,b)=>String(b.time).localeCompare(String(a.time)));
+ $("gTrips").innerHTML=TG.length?TG.map(g=>{const n=tripNet(g);return `<div class="row tap" data-g="${esc(g.id)}"><div class="l"><div class="t">${esc(g.time||"")} · ${esc(fm(g.fare))}</div><div class="m">${esc(num(g.km))} กม. · ค่าไฟ ${esc(fm(num(g.km)*perKm()))}</div></div><div class="amt ${n>=0?"in":"out"}">${n>=0?"+":"−"}${esc(fm(Math.abs(n)))}</div></div>`}).join(""):`<div class="empty">วันนี้ยังไม่มีรอบ<br>กด “เพิ่มรอบ” ทุกครั้งที่จบงาน</div>`;
+ const c=C();
+ $("gCar").innerHTML=[["ค่างวด/เดือน",fm(c.inst)],["ประกันรถ/ปี",fm(c.ins)],["อื่นๆ/เดือน (บำรุง ทางด่วน)",fm(c.other)],["วันขับ/เดือน",c.days+" วัน"],["ค่ารถตกวันละ",fm(carDay())],["ค่าไฟต่อ กม.","฿"+perKm().toFixed(2)+" ("+c.kwh+" kWh/100กม. × ฿"+c.price+")"],["Grab หัก",c.cut+"%"],["เป้ากำไรต่อวัน",fm(c.target)]].map(([a,b])=>`<div class="row"><div class="l">${esc(a)}</div><div style="font-weight:600;text-align:right">${esc(b)}</div></div>`).join("");
+ /* fixed */
+ $("fixList").innerHTML=(fixed.length?fixed.map(f=>`<div class="row tap" data-f="${esc(f.id)}"><div class="l"><div class="t">${esc(f.name)}${paidThisMonth(f,m)?'<span class="chip ok">จ่ายแล้ว</span>':'<span class="chip">ยังไม่จ่าย</span>'}</div><div class="m">${f.day?"จ่ายทุกวันที่ "+esc(f.day):"แตะเพื่อแก้"}</div></div><div class="amt">${esc(fm(f.amount))}</div></div>`).join(""):`<div class="empty">ยังไม่มีค่าคงที่</div>`)+`<div class="row" style="border-top:2px solid var(--ink);margin-top:6px"><div class="l t">รวมต่อเดือน</div><div class="amt">${esc(fm(ft))}</div></div>`;
+}
+
+/* ---------- dialogs ---------- */
+const dlg=$("dlg"),form=$("dform");
+const sel=(id,opts,v)=>`<select id="${id}">${opts.map(o=>{const [val,lab]=Array.isArray(o)?o:[o,o];return `<option value="${esc(val)}"${val===v?" selected":""}>${esc(lab)}</option>`}).join("")}</select>`;
+function openTx(t){
+ t=t||{kind:"out",date:today(),time:nowT(),cat:"อาหาร"};let kind=t.kind||"out";
+ const draw=()=>{form.innerHTML=`<h2>${t.id?"แก้รายการ":"กรอกรายการ"}</h2>
+ <div class="seg"><button type="button" data-k="out" aria-pressed="${kind!=="in"}">รายจ่าย</button><button type="button" data-k="in" aria-pressed="${kind==="in"}">รายรับ</button></div>
+ <label>จำนวนเงิน (บาท)<input id="fAmt" inputmode="decimal" value="${esc(t.amount??"")}" placeholder="0"></label>
+ <label>${kind==="in"?"รับจากใคร / อะไร":"จ่ายให้ใคร / ซื้ออะไร"}<input id="fWho" value="${esc(t.who||"")}"></label>
+ <div class="two-in"><label>วันที่<input id="fDate" type="date" value="${esc(t.date)}"></label><label>เวลา<input id="fTime" type="time" value="${esc(t.time||"")}"></label></div>
+ <label>หมวด${sel("fCat",kind==="in"?CATS_IN:CATS_OUT,t.cat)}</label>
+ ${kind!=="in"?`<label>เป็นค่าคงที่ไหม${sel("fFix",[["","ไม่ใช่"],...fixed.map(f=>[f.id,f.name])],t.fixed||"")}</label>`:""}
+ <div class="dlgacts">${t.id?'<button type="button" class="btn ghost" id="fDel">ลบ</button>':"<span></span>"}<div style="display:flex;gap:8px"><button type="button" class="btn ghost" id="fX">ยกเลิก</button><button class="btn pri">บันทึก</button></div></div>`;
+ form.querySelectorAll(".seg button").forEach(b=>b.onclick=()=>{t={...t,amount:$("fAmt").value,who:$("fWho").value,date:$("fDate").value,time:$("fTime").value};kind=b.dataset.k;t.cat=kind==="in"?CATS_IN[0]:CATS_OUT[0];draw()});
+ $("fX").onclick=()=>dlg.close();
+ if($("fDel"))armDel($("fDel"),()=>db.doc("tx/"+t.id).delete());
+ form.onsubmit=async e=>{e.preventDefault();const amount=num($("fAmt").value);if(!amount){toast("ใส่จำนวนเงินก่อน");return}
+  const body={kind,amount,who:$("fWho").value.trim(),date:$("fDate").value||today(),time:$("fTime").value,cat:$("fCat").value,fixed:kind!=="in"&&$("fFix")?$("fFix").value:"",src:t.src||"manual",ref:t.ref||"",bank:t.bank||""};
+  await save(()=>t.id?db.doc("tx/"+t.id).set(body):db.collection("tx").add(body));dlg.close()};
+ };draw();dlg.showModal();
+}
+function armDel(b,fn){b.onclick=async()=>{if(b.dataset.a){await save(fn);dlg.close();toast("ลบแล้ว")}else{b.dataset.a=1;b.textContent="แตะอีกครั้งเพื่อลบ"}}}
+function openGrab(g){
+ g=g||{date:today(),time:nowT()};
+ form.innerHTML=`<h2>${g.id?"แก้รอบ Grab":"เพิ่มรอบ Grab"}</h2>
+ <label>ค่ารอบที่ได้ (บาท)<input id="gFare" inputmode="decimal" value="${esc(g.fare??"")}" placeholder="เช่น 120"></label>
+ <label>ระยะทาง (กม.) ถ้ารู้<input id="gKm" inputmode="decimal" value="${esc(g.km??"")}" placeholder="เช่น 8"></label>
+ <div class="two-in"><label>วันที่<input id="gDate" type="date" value="${esc(g.date)}"></label><label>เวลา<input id="gTime" type="time" value="${esc(g.time||"")}"></label></div>
+ <div class="dlgacts">${g.id?'<button type="button" class="btn ghost" id="gDel">ลบ</button>':"<span></span>"}<div style="display:flex;gap:8px"><button type="button" class="btn ghost" id="gX">ยกเลิก</button><button class="btn pri">บันทึก</button></div></div>`;
+ $("gX").onclick=()=>dlg.close();if($("gDel"))armDel($("gDel"),()=>db.doc("grab/"+g.id).delete());
+ form.onsubmit=async e=>{e.preventDefault();const fare=num($("gFare").value);if(!fare){toast("ใส่ค่ารอบก่อน");return}
+  const body={fare,km:num($("gKm").value),date:$("gDate").value||today(),time:$("gTime").value};
+  await save(()=>g.id?db.doc("grab/"+g.id).set(body):db.collection("grab").add(body));dlg.close();toast("เพิ่มรอบแล้ว")};
+ dlg.showModal();setTimeout(()=>$("gFare").focus(),50);
+}
+function openFix(f){
+ f=f||{};const m=M();
+ form.innerHTML=`<h2>${f.id?"แก้ค่าคงที่":"เพิ่มค่าคงที่"}</h2>
+ <label>ชื่อ<input id="xName" value="${esc(f.name||"")}" placeholder="เช่น ค่าคอนโด"></label>
+ <div class="two-in"><label>บาท/เดือน<input id="xAmt" inputmode="decimal" value="${esc(f.amount??"")}"></label><label>จ่ายทุกวันที่<input id="xDay" inputmode="numeric" value="${esc(f.day||"")}" placeholder="1-31"></label></div>
+ ${f.id?`<label style="display:flex;gap:10px;align-items:center;color:var(--ink)"><input id="xPaid" type="checkbox" style="width:24px;min-height:24px" ${f.paid&&f.paid[m]?"checked":""}> จ่ายแล้วในเดือนที่เลือก (กรณีไม่มีสลิป)</label>`:""}
+ <div class="dlgacts">${f.id?'<button type="button" class="btn ghost" id="xDel">ลบ</button>':"<span></span>"}<div style="display:flex;gap:8px"><button type="button" class="btn ghost" id="xX">ยกเลิก</button><button class="btn pri">บันทึก</button></div></div>`;
+ $("xX").onclick=()=>dlg.close();if($("xDel"))armDel($("xDel"),()=>db.doc("fixed/"+f.id).delete());
+ form.onsubmit=async e=>{e.preventDefault();const name=$("xName").value.trim();if(!name){toast("ใส่ชื่อก่อน");return}
+  const paid={...(f.paid||{})};if($("xPaid")){if($("xPaid").checked)paid[m]=true;else delete paid[m]}
+  const body={name,amount:num($("xAmt").value),day:$("xDay").value.trim(),paid};
+  await save(()=>f.id?db.doc("fixed/"+f.id).set(body):db.collection("fixed").add(body));dlg.close()};
+ dlg.showModal();
+}
+function openCar(){
+ const c=C(),F=[["inst","ค่างวดรถ/เดือน (บาท)"],["ins","ประกันรถ/ปี (บาท)"],["other","อื่นๆ/เดือน: บำรุง ทางด่วน (บาท)"],["days","วันที่ขับต่อเดือน"],["kwh","รถกินไฟ kWh ต่อ 100 กม."],["price","ค่าไฟชาร์จ บาท/kWh"],["cut","Grab หัก % (ถ้ายอดที่กรอกยังไม่หัก)"],["target","เป้ากำไรต่อวัน (บาท)"]];
+ form.innerHTML=`<h2>ต้นทุน Volvo EX30</h2>${F.map(([k,l])=>`<label>${l}<input id="c_${k}" inputmode="decimal" value="${esc(c[k])}"></label>`).join("")}
+ <div class="muted">ชาร์จที่คอนโด/AC ถูกกว่า ตู้ DC เร็วแพงกว่า ใส่ราคาที่จ่ายจริง</div>
+ <div class="dlgacts"><span></span><div style="display:flex;gap:8px"><button type="button" class="btn ghost" id="cX">ยกเลิก</button><button class="btn pri">บันทึก</button></div></div>`;
+ $("cX").onclick=()=>dlg.close();
+ form.onsubmit=async e=>{e.preventDefault();const body={};F.forEach(([k])=>body[k]=num($("c_"+k).value));await save(()=>db.doc("settings/car").set(body));dlg.close();toast("บันทึกต้นทุนรถแล้ว")};
+ dlg.showModal();
+}
+async function save(fn){
+ try{await fn()}catch(e){toast(e&&e.code==="quota_exceeded"?"พื้นที่เต็ม ลบรายการเก่าก่อน":"บันทึกไม่สำเร็จ ลองอีกครั้ง");throw e}}
+
+/* ---------- events ---------- */
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.setAttribute("aria-selected",x===b));document.querySelectorAll("main>section").forEach(s=>s.hidden=s.id!==b.dataset.t)});
+$("month").onchange=render;
+$("addBtn").onclick=()=>openTx();
+$("heroGrab").onclick=()=>openGrab();
+$("gAdd").onclick=()=>openGrab();
+$("carEdit").onclick=openCar;
+$("fixAdd").onclick=()=>openFix();
+$("txFilter").onclick=e=>{const b=e.target.closest("button");if(b){$("txFilter").dataset.f=b.dataset.f;render()}};
+document.body.addEventListener("click",e=>{const r=e.target.closest("[data-tx],[data-g],.row[data-f]");if(!r)return;
+ if(r.dataset.tx){const t=tx.find(x=>x.id===r.dataset.tx);if(t)openTx({...t})}
+ else if(r.dataset.g){const g=grab.find(x=>x.id===r.dataset.g);if(g)openGrab({...g})}
+ else{const f=fixed.find(x=>x.id===r.dataset.f);if(f)openFix({...f})}});
+setInterval(render,60000);
+
+/* ---------- data: kept on this phone ---------- */
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){toast("บันทึกไม่ได้: พื้นที่เครื่องเต็มหรือปิดการเก็บข้อมูล")}sync();render()}
+function sync(){const L=o=>Object.entries(o||{}).map(([id,v])=>({id,...v}));tx=L(S.tx);grab=L(S.grab);fixed=L(S.fixed);car={...(S.car||{})};
+ $("lastBk").textContent=S.lastBackup?"สำรองล่าสุด: "+S.lastBackup:"ยังไม่เคยสำรองข้อมูล"}
+sync();render();
+try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch{}
+$("expBtn").onclick=async()=>{
+ S.lastBackup=today();persist();
+ const name="money-backup-"+today()+".json",blob=new Blob([JSON.stringify(S,null,1)],{type:"application/json"});
+ try{const f=new File([blob],name,{type:"application/json"});
+  if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:name});return}}catch(e){if(e&&e.name==="AbortError")return}
+ const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);toast("ดาวน์โหลดไฟล์สำรองแล้ว")};
+$("impBtn").onclick=()=>$("importFile").click();
+$("importFile").onchange=async e=>{const f=e.target.files[0];e.target.value="";if(!f)return;
+ try{const d=JSON.parse(await f.text());if(!d||typeof d!=="object"||!d.tx||!d.fixed)throw 0;
+  S={tx:d.tx||{},grab:d.grab||{},fixed:d.fixed||{},car:d.car||{},lastBackup:d.lastBackup||""};persist();toast("นำข้อมูลกลับมาแล้ว")}
+ catch{toast("ไฟล์นี้ไม่ใช่ไฟล์สำรองของแอป")}};
+if("serviceWorker" in navigator&&location.protocol==="https:"){navigator.serviceWorker.register("sw.js").catch(()=>{})}
+}
+</script>
+</body>
+</html>
